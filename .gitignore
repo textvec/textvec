@@ -1,0 +1,5 @@
+*.pyc
+*.so
+*.pyd
+examples/data/*
+examples/.ipynb_checkpoints
