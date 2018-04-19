@@ -1,0 +1,10 @@
+README.md
+setup.cfg
+setup.py
+textvec/__init__.py
+textvec/vectorizers.py
+textvec.egg-info/PKG-INFO
+textvec.egg-info/SOURCES.txt
+textvec.egg-info/dependency_links.txt
+textvec.egg-info/requires.txt
+textvec.egg-info/top_level.txt

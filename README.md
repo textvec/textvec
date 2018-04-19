@@ -32,6 +32,21 @@ For more dataset benchmarks (rottent tomatos, airline sentiment) see [Binary cla
 
 ------------------
 
+## Install:
+Usage:
+```
+pip install textvec
+```
+
+Source code:
+```
+git clone https://github.com/zveryansky/textvec
+cd textvec
+pip install .
+```
+
+------------------
+
 ## HOW: Examples
 The usage is similar to scikit-learn:
 ``` python
@@ -62,9 +77,10 @@ Most of the vectorization techniques you can find in articles<sup>1,2</sup>. If 
 ------------------
 
 ## TODO
-- [ ] Add methods from https://arxiv.org/pdf/1305.0638.pdf
+- [ ] Add TFBNS
 - [ ] Remove dependence of sklearn
 - [ ] Tests
+- [ ] Docs
 
 ------------------
 
