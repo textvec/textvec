@@ -87,3 +87,4 @@ Most of the vectorization techniques you can find in articles<sup>1,2</sup>. If 
 ## REFERENCE
 - [1] https://arxiv.org/pdf/1012.2609.pdf
 - [2] [M. Lan, C. L. Tan, J. Su, and Y. Lu] Supervised and traditional term weighting methods for automatic text categorization
+- [3] Thanks [aysent](https://aysent.github.io/2015/10/21/supervised-term-weighting.html#motivation-for-text-classification-tasks) for an inspiration
