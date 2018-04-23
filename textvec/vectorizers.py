@@ -7,7 +7,7 @@ from sklearn.preprocessing import normalize
 
 
 class TfIcfVectorizer():
-    """Supervised method (supports mullticlass) to transform 
+    """Supervised method (supports multiclass) to transform 
     a count matrix to a normalized Tficf representation
     Tf means term-frequency while ICF means inverse category frequency.
     Parameters
