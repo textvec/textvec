@@ -81,6 +81,7 @@ Most of the vectorization techniques you can find in articles<sup>1,2</sup>. If 
 - [ ] Remove dependence of sklearn
 - [ ] Tests
 - [ ] Docs
+- [ ] GridSearch for benchmark
 
 ------------------
 
