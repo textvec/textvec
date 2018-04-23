@@ -1,5 +1,4 @@
 ![textvec logo](https://github.com/zveryansky/textvec/blob/master/examples/images/logo.png)
-# Textvec
 ## WHAT: Supervised text vectorization tool
 
 Textvec is a text vectorization tool, with the aim to implement all the "classic" text vectorization NLP methods in Python. The main idea of this project is to show alternatives for an excellent TFIDF method which is highly overused for supervised tasks. All interfaces are similar to [scikit-learn](https://github.com/scikit-learn/scikit-learn) so you should be able to test the perfomance of this supervised methods just with a few changes.
