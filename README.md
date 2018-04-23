@@ -1,7 +1,7 @@
 # Textvec
 ## WHAT: Supervised text vectorization tool
 
-Textvec is a text vectorization tool, with the aim to implement all the "classic" text vectorization NLP methods in Python. The main idea of this project is to show alternatives for an excellent TFIDF method which is highly overused for supervised tasks. An interfaces are similar to [scikit-learn](https://github.com/scikit-learn/scikit-learn) so you should be able to test the perfomance of this supervised methods just with a few changes.
+Textvec is a text vectorization tool, with the aim to implement all the "classic" text vectorization NLP methods in Python. The main idea of this project is to show alternatives for an excellent TFIDF method which is highly overused for supervised tasks. All interfaces are similar to [scikit-learn](https://github.com/scikit-learn/scikit-learn) so you should be able to test the perfomance of this supervised methods just with a few changes.
 
 Textvec is compatible with: __Python 2.7-3.6__.
 
@@ -24,7 +24,7 @@ But most text classification examples on the internet ignores that fact.
 | TFCHI2   |       0.8734       |   0.6990   |          0.8900          |              NA               |         NA        |
 | TFGR     |       0.8581       |   0.6793   |          0.8883          |              NA               |         NA        |
 
-Here is a comparison for binary classification on imdb sentiment data set. Labels sorted by accuracy score and the heatmap shows the correlation between different aproaches. As you can see some methods are good for to ensemble the models or perform features selection.
+Here is a comparison for binary classification on imdb sentiment data set. Labels sorted by accuracy score and the heatmap shows the correlation between different aproaches. As you can see some methods are good for to ensemble models or perform features selection.
 
 ![Binary comparison](https://github.com/zveryansky/textvec/blob/master/examples/images/imdb_bin.png)
 

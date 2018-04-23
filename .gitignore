@@ -1,7 +1,6 @@
 *.pyc
 *.so
 *.pyd
-*.pypirc
 pypihelp.txt
 build/*
 dist/*
