@@ -1,3 +1,4 @@
+![textvec logo](https://github.com/zveryansky/textvec/blob/master/examples/images/logo.png)
 # Textvec
 ## WHAT: Supervised text vectorization tool
 
