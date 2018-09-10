@@ -49,7 +49,7 @@ class TfIcfVectorizer():
 
 
 class BaseBinaryFitter():
-    """Base class for supervised methods (supports ONLY binary classification).
+    """Base class for supervised methods (supports only binary classification).
     Should not be used as by itself.
     ----------
     norm : 'l1', 'l2', 'max' or None, optional
