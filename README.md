@@ -3,7 +3,7 @@
 
 Textvec is a text vectorization tool, with the aim to implement all the "classic" text vectorization NLP methods in Python. The main idea of this project is to show alternatives for an excellent TFIDF method which is highly overused for supervised tasks. All interfaces are similar to [scikit-learn](https://github.com/scikit-learn/scikit-learn) so you should be able to test the performance of this supervised methods just with a few changes.
 
-Textvec is compatible with: __Python 2.7-3.6__.
+Textvec is compatible with: __Python 2.7-3.7__.
 
 ------------------
 
