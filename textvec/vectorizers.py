@@ -1,9 +1,10 @@
-import re
-import string
+from collections import defaultdict
 
 import numpy as np
 import scipy.sparse as sp
+from sklearn.decomposition import TruncatedSVD
 from sklearn.preprocessing import normalize
+from gensim.models.keyedvectors import BaseKeyedVectors
 
 
 class TfIcfVectorizer():
@@ -378,7 +379,9 @@ class TfBinIcfVectorizer(BaseBinaryFitter):
         Apply sublinear tf scaling, i.e. replace tf with 1 + log(tf).
     References
     ----------
-    .. [0] `https://arxiv.org/pdf/1012.2609.pdf`
+    .. [0] Arora S, Liang Y, Ma T (2017)
+        A Simple but Tough-to-Beat Baseline for Sentence Embeddings.
+        `https://arxiv.org/pdf/1012.2609.pdf`
     """
 
     def transform(self, X, min_freq=1):
@@ -429,3 +432,122 @@ class TfpfVectorizer(BaseBinaryFitter):
             X = normalize(X, self.norm)
 
         return X
+
+
+# TODO: add frequency source
+class SifVectorizer:
+    """Unsupervised method
+    compute smooth inverse frequency (SIF)
+
+    Parameters
+    ----------
+    model : :class:`~gensim.models.keyedvectors.BaseKeyedVectors`
+        Object contains the word vectors and the vocabulary.
+    alpha : float, default=0.001
+        Parameter which is used to weigh each individual word
+        based on its probability p(w).
+        If alpha = 1, train simply computes the averaged
+        sentence representation.
+    npc : int, default=1
+        Number of principal components to remove from
+        sentence embedding.
+    norm : 'l1', 'l2', 'max' or None, optional
+        Norm used to normalize term vectors. None for no normalization.
+
+    References
+    ----------
+    Arora S, Liang Y, Ma T (2017)
+    A Simple but Tough-to-Beat Baseline for Sentence Embeddings
+    https://openreview.net/pdf?id=SyK00v5xx
+    """
+    def __init__(self, model, alpha=1e-3, npc=1, norm="l2"):
+        if isinstance(model, BaseKeyedVectors):
+            self.model = model
+        else:
+            raise RuntimeError("Model must be child of BaseKeyedVectors class")
+
+        assert alpha > 0
+        assert npc >= 0
+
+        self.model = model
+        self.dim = model.vector_size
+        self.alpha = alpha
+        self.npc = npc
+        self.norm = norm
+        self._word2freq = None
+
+    def _compute_pc(self, X, npc):
+        """Compute the first n principal components
+        for given sentence embeddings.
+
+        Parameters
+        ----------
+        X : numpy.ndarray
+            The sentence embedding.
+        npc : int
+            The number of principal components to compute.
+
+        Returns
+        -------
+        numpy.ndarray
+            The first `npc` principal components of sentence embedding.
+        """
+        svd = TruncatedSVD(n_components=npc, n_iter=7, random_state=0)
+        svd.fit(X)
+        return svd.components_
+
+    def _remove_pc(self, X, pc):
+        """Remove the projection from the averaged sentence embedding.
+
+        Parameters
+        ----------
+        X : numpy.ndarray
+            The sentence embedding.
+        pc : numpy.ndarray
+            The principal components to remove from sentence embedding.
+
+        Returns
+        -------
+        numpy.ndarray
+            The sentence embedding after removing the projection.
+        """
+        if not np.any(X):
+            return X
+        return X - X.dot(pc.transpose()).dot(pc)
+
+    def fit(self, X, y=None):
+        vocab = defaultdict(int)
+        for doc in X:
+            for word in doc:
+                vocab[word] += 1
+        vocab = defaultdict(
+            int, {k: v / len(vocab) for k, v in vocab.items()}
+        )
+        self._word2freq = vocab
+        return self
+
+    # TODO: optimize
+    def _get_weighted_average(self, docs):
+        sentences_vec = []
+        for doc in docs:
+            sif = []
+            word_vectors = []
+            for word in doc:
+                if word in self.model:
+                    sif.append(
+                        self.alpha / (self.alpha + self._word2freq[word])
+                    )
+                    word_vectors.append(self.model[word])
+            weighted_average = np.dot(sif, word_vectors) / len(sif) \
+                if sif else np.zeros(self.dim)
+            sentences_vec.append(weighted_average)
+        return np.array(sentences_vec)
+
+    def transform(self, X):
+        embeddings = self._get_weighted_average(X)
+        if self.npc > 0:
+            pc = self._compute_pc(embeddings, self.npc)
+            embeddings = self._remove_pc(embeddings, pc)
+        if self.norm:
+            embeddings = normalize(embeddings, self.norm)
+        return embeddings
