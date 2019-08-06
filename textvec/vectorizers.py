@@ -501,7 +501,7 @@ class SifVectorizer:
         svd.fit(X)
         return svd.components_
 
-    def _remove_pc(self, X, pc):
+    def _remove_pc(self, X, npc):
         """Remove the projection from the averaged sentence embedding.
 
         Parameters
@@ -509,8 +509,8 @@ class SifVectorizer:
         X : numpy.ndarray
             The sentence embedding.
 
-        pc : numpy.ndarray
-            The principal components to remove from sentence embedding.
+        npc : int
+            The number of principal components to compute.
 
         Returns
         -------
@@ -518,9 +518,11 @@ class SifVectorizer:
             The sentence embedding after removing the projection.
 
         """
-        if not np.any(X):
-            return X
-        return X - X.dot(pc.transpose()).dot(pc)
+        pc = self._compute_pc(X, npc)
+        if npc == 1:
+            return X - X.dot(pc.transpose()) * pc
+        else:
+            return X - X.dot(pc.transpose()).dot(pc)
 
     def fit(self, X, y=None):
         vocab = defaultdict(int)
@@ -553,8 +555,7 @@ class SifVectorizer:
     def transform(self, X):
         embeddings = self._get_weighted_average(X)
         if self.npc > 0:
-            pc = self._compute_pc(embeddings, self.npc)
-            embeddings = self._remove_pc(embeddings, pc)
+            embeddings = self._remove_pc(embeddings, self.npc)
         if self.norm:
             embeddings = normalize(embeddings, self.norm)
         return embeddings
