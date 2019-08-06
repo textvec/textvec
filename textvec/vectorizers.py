@@ -443,14 +443,17 @@ class SifVectorizer:
     ----------
     model : :class:`~gensim.models.keyedvectors.BaseKeyedVectors`
         Object contains the word vectors and the vocabulary.
+
     alpha : float, default=0.001
         Parameter which is used to weigh each individual word
         based on its probability p(w).
         If alpha = 1, train simply computes the averaged
         sentence representation.
+
     npc : int, default=1
         Number of principal components to remove from
         sentence embedding.
+
     norm : 'l1', 'l2', 'max' or None, optional
         Norm used to normalize term vectors. None for no normalization.
 
@@ -459,6 +462,7 @@ class SifVectorizer:
     Arora S, Liang Y, Ma T (2017)
     A Simple but Tough-to-Beat Baseline for Sentence Embeddings
     https://openreview.net/pdf?id=SyK00v5xx
+
     """
     def __init__(self, model, alpha=1e-3, npc=1, norm="l2"):
         if isinstance(model, BaseKeyedVectors):
@@ -484,6 +488,7 @@ class SifVectorizer:
         ----------
         X : numpy.ndarray
             The sentence embedding.
+
         npc : int
             The number of principal components to compute.
 
@@ -503,6 +508,7 @@ class SifVectorizer:
         ----------
         X : numpy.ndarray
             The sentence embedding.
+
         pc : numpy.ndarray
             The principal components to remove from sentence embedding.
 
@@ -510,6 +516,7 @@ class SifVectorizer:
         -------
         numpy.ndarray
             The sentence embedding after removing the projection.
+
         """
         if not np.any(X):
             return X
