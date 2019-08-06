@@ -457,6 +457,9 @@ class SifVectorizer:
     norm : 'l1', 'l2', 'max' or None, optional
         Norm used to normalize term vectors. None for no normalization.
 
+    word_frequency : dict, optional
+        TODO
+
     References
     ----------
     Arora S, Liang Y, Ma T (2017)
@@ -464,7 +467,7 @@ class SifVectorizer:
     https://openreview.net/pdf?id=SyK00v5xx
 
     """
-    def __init__(self, model, alpha=1e-3, npc=1, norm="l2"):
+    def __init__(self, model, alpha=1e-3, npc=1, norm="l2", word_frequency=None):
         if isinstance(model, BaseKeyedVectors):
             self.model = model
         else:
@@ -478,6 +481,7 @@ class SifVectorizer:
         self.alpha = alpha
         self.npc = npc
         self.norm = norm
+        self.word_frequency = word_frequency
         self._word2freq = None
 
     def _compute_pc(self, X, npc):
@@ -524,14 +528,17 @@ class SifVectorizer:
         else:
             return X - X.dot(pc.transpose()).dot(pc)
 
+    # TODO: set minimum frequency of dictionary
+    #  as default frequency for all oov words
     def fit(self, X, y=None):
         vocab = defaultdict(int)
         for doc in X:
             for word in doc:
                 vocab[word] += 1
-        vocab = defaultdict(
-            int, {k: v / len(vocab) for k, v in vocab.items()}
-        )
+        vocab = defaultdict(int, {
+            k: self.alpha / (self.alpha + v / len(vocab))
+            for k, v in vocab.items()
+        })
         self._word2freq = vocab
         return self
 
@@ -543,9 +550,7 @@ class SifVectorizer:
             word_vectors = []
             for word in doc:
                 if word in self.model:
-                    sif.append(
-                        self.alpha / (self.alpha + self._word2freq[word])
-                    )
+                    sif.append(self._word2freq[word])
                     word_vectors.append(self.model[word])
             weighted_average = np.dot(sif, word_vectors) / len(sif) \
                 if sif else np.zeros(self.dim)
