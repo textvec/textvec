@@ -456,12 +456,6 @@ class SifVectorizer:
     norm : 'l1', 'l2', 'max' or None, optional
         Norm used to normalize term vectors. None for no normalization.
 
-    precompute_vectors : boolean, default=False.
-        If True, pre-compute SIF weighted vectors of each word from
-        train data and stores it in the internal dictionary
-        (which requires a large amount of memory for large corpora),
-        otherwise pre-compute only SIF weights.
-
     References
     ----------
     Arora S, Liang Y, Ma T (2017)
@@ -470,7 +464,7 @@ class SifVectorizer:
 
     """
 
-    def __init__(self, model, alpha=1e-3, npc=1, norm="l2", precompute_vectors=False):
+    def __init__(self, model, alpha=1e-3, npc=1, norm="l2"):
         if isinstance(model, BaseKeyedVectors):
             self.model = model
         else:
@@ -484,11 +478,9 @@ class SifVectorizer:
         self.alpha = alpha
         self.npc = npc
         self.norm = norm
-        self.precompute_vectors = precompute_vectors
 
-        self._word2sif = None
-        self._word2vec = None
-        self._oov_weight = None
+        self.vocab = None
+        self.oov_sif_weight = None
 
     def _compute_pc(self, X, npc):
         """Compute the first n principal components
@@ -535,31 +527,9 @@ class SifVectorizer:
         else:
             return X - X.dot(pc.transpose()).dot(pc)
 
-    def _precompute_weights(self, docs):
-        """Precompute smooth inverse frequency weights.
-
-        Parameters
-        ----------
-        docs : Iiterable
-            An iterable which yields iterable of str.
-
-        Returns
-        -------
-        dict
-            The dictionary of SIF weighted words [word: sif_weight].
-
-        """
-        frequency_vocab = collections.Counter(itertools.chain.from_iterable(docs))
-        corpus_size = len(frequency_vocab)
-        return {
-            k: self.alpha / (self.alpha + v / corpus_size)
-            for k, v in frequency_vocab.items()
-        }
-
     def fit(self, X, y=None):
-        """Learn a sif weights or sif weighted vectors
-        dictionary of all tokens in the raw documents
-        depending on the self.precompute_vectors value.
+        """Learn a sif weights dictionary of all tokens
+        in the tokenized sentences.
 
         Parameters
         ----------
@@ -573,24 +543,22 @@ class SifVectorizer:
         self
 
         """
-        weights = self._precompute_weights(X)
-        self._oov_weight = min(weights.values())
-        if self.precompute_vectors:
-            self._word2vec = {
-                k: v * self.model[k] for k, v in weights.items() if k in self.model
-            }
-        else:
-            self._word2sif = weights
+        vocab = collections.Counter(itertools.chain.from_iterable(X))
+        corpus_size = len(vocab)
+        self.vocab = {
+            self.model.vocab[k].index: self.alpha / (self.alpha + v / corpus_size)
+            for k, v in vocab.items()
+            if k in self.model
+        }
+        self.oov_sif_weight = min(vocab.values())
         return self
 
-    def _get_weighted_average(self, docs):
-        """Learn a sif weights or sif weighted vectors
-        dictionary of all tokens in the raw documents
-        depending on the self.precompute_vectors value.
+    def _get_weighted_average(self, sentences):
+        """Calculate SIF embeddings for each sentence.
 
         Parameters
         ----------
-        docs : iterable
+        sentences : iterable
             An iterable which yields iterable of str.
 
         Returns
@@ -599,28 +567,20 @@ class SifVectorizer:
             The sentence embedding matrix.
 
         """
-        if self.precompute_vectors:
-            return np.array(
-                [
-                    np.mean(
-                        [self._word2vec[w] for w in doc if w in self._word2vec], axis=0
-                    )
-                    for doc in docs
-                ]
-            )
-        sentences_vec = []
-        for doc in docs:
-            sif = []
-            word_vectors = []
-            for word in doc:
-                if word in self.model:
-                    sif.append(self._word2sif.get(word, self._oov_weight))
-                    word_vectors.append(self.model[word])
-            weighted_average = (
-                np.dot(sif, word_vectors) / len(sif) if sif else np.zeros(self.dim)
-            )
-            sentences_vec.append(weighted_average)
-        return np.array(sentences_vec)
+        wv_vocab = self.model.vocab
+        wv_vectors = self.model.vectors
+
+        sent_embeddings = np.zeros((len(sentences), self.dim), dtype=np.float32)
+        for i, sent in enumerate(sentences):
+            sent_indices = [wv_vocab[w].index for w in sent if w in self.model]
+            weights = np.array([
+                self.vocab.get(idx, self.oov_sif_weight)
+                for idx in sent_indices
+            ])[:, None]
+            if sent_indices:
+                sent_emb = np.mean(wv_vectors[sent_indices] * weights, axis=0)
+                sent_embeddings[i] = sent_emb
+        return sent_embeddings
 
     def transform(self, X):
         """Transform sentences to SIF weighted sentence embedding matrix.
@@ -636,6 +596,8 @@ class SifVectorizer:
             The sentence embedding matrix.
 
         """
+        if not self.vocab:
+            raise RuntimeError("This SifVectorizer instance is not fitted yet.")
         embeddings = self._get_weighted_average(X)
         if self.npc > 0:
             embeddings = self._remove_pc(embeddings, self.npc)
