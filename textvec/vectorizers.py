@@ -447,9 +447,7 @@ class SifVectorizer:
 
     alpha : float, default=0.001
         Parameter which is used to weigh each individual word
-        based on its probability p(w).
-        If alpha = 1, train simply computes the averaged
-        sentence representation.
+        based on its probability.
 
     npc : int, default=1
         Number of principal components to remove from
@@ -463,7 +461,6 @@ class SifVectorizer:
         train data and stores it in the internal dictionary
         (which requires a large amount of memory for large corpora),
         otherwise pre-compute only SIF weights.
-
 
     References
     ----------
@@ -593,7 +590,7 @@ class SifVectorizer:
 
         Parameters
         ----------
-        X : iterable
+        docs : iterable
             An iterable which yields iterable of str.
 
         Returns
