@@ -554,7 +554,7 @@ class SifVectorizer:
         return self
 
     def _get_weighted_average(self, sentences):
-        """Calculate SIF embeddings for each sentence.
+        """Calculate average SIF embedding for each sentence.
 
         Parameters
         ----------
