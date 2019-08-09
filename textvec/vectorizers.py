@@ -380,9 +380,7 @@ class TfBinIcfVectorizer(BaseBinaryFitter):
         Apply sublinear tf scaling, i.e. replace tf with 1 + log(tf).
     References
     ----------
-    .. [0] Arora S, Liang Y, Ma T (2017)
-        A Simple but Tough-to-Beat Baseline for Sentence Embeddings.
-        `https://arxiv.org/pdf/1012.2609.pdf`
+    .. [0] `https://arxiv.org/pdf/1012.2609.pdf`
     """
 
     def transform(self, X, min_freq=1):
