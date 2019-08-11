@@ -1,9 +1,11 @@
-import re
-import string
+import collections
+import itertools
 
 import numpy as np
 import scipy.sparse as sp
+from sklearn.decomposition import TruncatedSVD
 from sklearn.preprocessing import normalize
+from gensim.models.keyedvectors import BaseKeyedVectors
 
 
 class TfIcfVectorizer():
@@ -429,3 +431,195 @@ class TfpfVectorizer(BaseBinaryFitter):
             X = normalize(X, self.norm)
 
         return X
+
+
+# TODO: add frequency source
+class SifVectorizer:
+    """Unsupervised method
+    compute smooth inverse frequency (SIF)
+
+    Parameters
+    ----------
+    model : :class:`~gensim.models.keyedvectors.BaseKeyedVectors`
+        Object contains the word vectors and the vocabulary.
+
+    alpha : float, default=0.001
+        Parameter which is used to weigh each individual word
+        based on its probability.
+
+    npc : int, default=1
+        Number of principal components to remove from
+        sentence embedding.
+
+    norm : 'l1', 'l2', 'max' or None, optional
+        Norm used to normalize term vectors. None for no normalization.
+
+    Examples
+    --------
+    >>> from textvec.vectorizers import SifVectorizer
+    >>> import gensim.downloader as api
+    >>> model = api.load("glove-twitter-25")
+    >>> X = [["first", "sentence"], ["second", "sentence"]]
+    >>> sif = SifVectorizer(model, alpha=0.001, npc=1)
+    >>> sif.fit(X)
+    >>> sif.transform(X)
+    array([[-0.2028063 , -0.07884892,  0.30937403, -0.4058012 , -0.02779805,
+            -0.14715618,  0.09867747,  0.2490029 ,  0.22715728,  0.02029565,
+            -0.0324943 , -0.14876653, -0.19695622, -0.349479  , -0.00145111,
+            -0.17245306,  0.14833301, -0.15239874,  0.1624661 ,  0.08161873,
+             0.13065818, -0.06360044, -0.39932743,  0.02312368,  0.26987103],
+           [ 0.20280789,  0.0788492 , -0.30937368,  0.40580118,  0.02779823,
+             0.14715572, -0.09867608, -0.24900348, -0.22715725, -0.02029571,
+             0.0324944 ,  0.14876756,  0.19695152,  0.34947947,  0.00145159,
+             0.1724532 , -0.14833233,  0.15239872, -0.1624666 , -0.08161937,
+            -0.13065891,  0.06360071,  0.39932764, -0.02312382, -0.26987168]],
+          dtype=float32)
+
+    References
+    ----------
+    Arora S, Liang Y, Ma T (2017)
+    A Simple but Tough-to-Beat Baseline for Sentence Embeddings
+    https://openreview.net/pdf?id=SyK00v5xx
+
+    """
+
+    def __init__(self, model, alpha=1e-3, npc=1, norm="l2"):
+        if isinstance(model, BaseKeyedVectors):
+            self.model = model
+        else:
+            raise RuntimeError("Model must be child of BaseKeyedVectors class")
+
+        assert alpha > 0
+        assert npc >= 0
+
+        self.model = model
+        self.dim = model.vector_size
+        self.alpha = alpha
+        self.npc = npc
+        self.norm = norm
+
+        self.vocab = None
+        self.oov_sif_weight = None
+
+    def _compute_pc(self, X, npc):
+        """Compute the first n principal components
+        for given sentence embeddings.
+
+        Parameters
+        ----------
+        X : numpy.ndarray
+            The sentence embedding.
+
+        npc : int
+            The number of principal components to compute.
+
+        Returns
+        -------
+        numpy.ndarray
+            The first `npc` principal components of sentence embedding.
+
+        """
+        svd = TruncatedSVD(n_components=npc, n_iter=7, random_state=0)
+        svd.fit(X)
+        return svd.components_
+
+    def _remove_pc(self, X, npc):
+        """Remove the projection from the averaged sentence embedding.
+
+        Parameters
+        ----------
+        X : numpy.ndarray
+            The sentence embedding.
+
+        npc : int
+            The number of principal components to compute.
+
+        Returns
+        -------
+        numpy.ndarray
+            The sentence embedding after removing the projection.
+
+        """
+        pc = self._compute_pc(X, npc)
+        if npc == 1:
+            return X - X.dot(pc.transpose()) * pc
+        else:
+            return X - X.dot(pc.transpose()).dot(pc)
+
+    def fit(self, X, y=None):
+        """Learn a sif weights dictionary of all tokens
+        in the tokenized sentences.
+
+        Parameters
+        ----------
+        X : iterable
+            An iterable which yields iterable of str.
+
+        y : Ignored
+
+        Returns
+        -------
+        self
+
+        """
+        vocab = collections.Counter(itertools.chain.from_iterable(X))
+        corpus_size = len(vocab)
+        self.vocab = {
+            self.model.vocab[k].index: self.alpha / (self.alpha + v / corpus_size)
+            for k, v in vocab.items()
+            if k in self.model
+        }
+        self.oov_sif_weight = min(vocab.values())
+        return self
+
+    def _get_weighted_average(self, sentences):
+        """Calculate average SIF embedding for each sentence.
+
+        Parameters
+        ----------
+        sentences : iterable
+            An iterable which yields iterable of str.
+
+        Returns
+        -------
+        numpy.ndarray
+            The sentence embedding matrix.
+
+        """
+        wv_vocab = self.model.vocab
+        wv_vectors = self.model.vectors
+
+        sent_embeddings = np.zeros((len(sentences), self.dim), dtype=np.float32)
+        for i, sent in enumerate(sentences):
+            sent_indices = [wv_vocab[w].index for w in sent if w in self.model]
+            weights = np.array([
+                self.vocab.get(idx, self.oov_sif_weight)
+                for idx in sent_indices
+            ])[:, None]
+            if sent_indices:
+                sent_emb = np.mean(wv_vectors[sent_indices] * weights, axis=0)
+                sent_embeddings[i] = sent_emb
+        return sent_embeddings
+
+    def transform(self, X):
+        """Transform sentences to SIF weighted sentence embedding matrix.
+
+        Parameters
+        ----------
+        X : iterable
+            An iterable which yields iterable of str.
+
+        Returns
+        -------
+        numpy.ndarray
+            The sentence embedding matrix.
+
+        """
+        if not self.vocab:
+            raise RuntimeError("This SifVectorizer instance is not fitted yet.")
+        embeddings = self._get_weighted_average(X)
+        if self.npc > 0:
+            embeddings = self._remove_pc(embeddings, self.npc)
+        if self.norm:
+            embeddings = normalize(embeddings, self.norm)
+        return embeddings
