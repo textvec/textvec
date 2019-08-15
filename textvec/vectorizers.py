@@ -5,10 +5,11 @@ import numpy as np
 import scipy.sparse as sp
 from sklearn.decomposition import TruncatedSVD
 from sklearn.preprocessing import normalize
+from sklearn.base import TransformerMixin
 from gensim.models.keyedvectors import BaseKeyedVectors
 
 
-class TfIcfVectorizer():
+class TfIcfVectorizer(TransformerMixin):
     """Supervised method (supports multiclass) to transform 
     a count matrix to a normalized Tficf representation
     Tf means term-frequency while ICF means inverse category frequency.
@@ -39,6 +40,7 @@ class TfIcfVectorizer():
         self.corpus_occurence = np.sum(samples != 0, axis=0)
         self.k = np.log2(1 + (self.number_of_classes / self.corpus_occurence))
         self._n_features = n_features
+        return self
 
     def transform(self, X, min_freq=1):
         if self.sublinear_tf:
@@ -50,7 +52,7 @@ class TfIcfVectorizer():
         return X
 
 
-class BaseBinaryFitter():
+class BaseBinaryFitter(TransformerMixin):
     """Base class for supervised methods (supports only binary classification).
     Should not be used as by itself.
     ----------
@@ -100,6 +102,7 @@ class BaseBinaryFitter():
             self._fp += int(self.smooth_df)
             self._fn += int(self.smooth_df)
             self._tn += int(self.smooth_df)
+        return self
 
 
 class TforVectorizer(BaseBinaryFitter):
