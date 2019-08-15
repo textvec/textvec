@@ -24,4 +24,4 @@ def count_matrix_dataset():
     sentences = ["dog cat", "foo bar", "one two foo"]
     targets = np.array([1, 0, 0])
     matrix = cv.fit_transform(sentences)
-    return matrix, targets
+    return cv, matrix, targets

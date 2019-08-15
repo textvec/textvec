@@ -31,7 +31,7 @@ def test_keyed_vectors(keyed_vectors):
 @pytest.mark.parametrize("vectorizer", vectorizers)
 class TestVectorizers:
     def test_shape(self, count_matrix_dataset, vectorizer):
-        x, y = count_matrix_dataset
+        _, x, y = count_matrix_dataset
         v = vectorizer()
         v.fit(x, y)
         matrix = v.transform(x)
@@ -39,12 +39,21 @@ class TestVectorizers:
         assert x.shape == matrix.shape
 
     def test_norm(self, count_matrix_dataset, vectorizer):
-        x, y = count_matrix_dataset
+        _, x, y = count_matrix_dataset
         v = vectorizer(norm="l2")
         v.fit(x, y)
         matrix = v.transform(x)
         norm = sp_norm(matrix, axis=1)
         np.testing.assert_allclose(np.mean(norm), 1.)
+
+    def test_oov(self, count_matrix_dataset, vectorizer):
+        cv, x, y = count_matrix_dataset
+        v = vectorizer()
+        v.fit(x, y)
+        sentences = ["out of", "vocab words"]
+        transformed = cv.transform(sentences)
+        matrix = v.transform(transformed).toarray()
+        np.testing.assert_allclose(matrix, np.zeros_like(matrix))
 
 
 class TestSif:
@@ -70,6 +79,6 @@ class TestSif:
 
     def test_oov(self, keyed_vectors):
         sif = SifVectorizer(keyed_vectors, npc=0).fit(tokenized_sentences)
-        matrix = sif.transform([["out", "of"], ["vocab", "sentences"]])
+        matrix = sif.transform([["out", "of"], ["vocab", "words"]])
         expected = np.zeros_like(matrix)
         np.testing.assert_array_equal(matrix, expected)
