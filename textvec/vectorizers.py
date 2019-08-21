@@ -9,6 +9,15 @@ from sklearn.base import TransformerMixin
 from gensim.models.keyedvectors import BaseKeyedVectors
 
 
+def ensure_sparse_format(array, dtype=np.float64):
+    if sp.issparse(array):
+        if array.dtype != dtype:
+            array = array.astype(dtype)
+    else:
+        array = sp.csr_matrix(array, dtype=dtype)
+    return array
+
+
 class TfIcfVectorizer(TransformerMixin):
     """Supervised method (supports multiclass) to transform 
     a count matrix to a normalized Tficf representation
@@ -44,7 +53,9 @@ class TfIcfVectorizer(TransformerMixin):
 
     def transform(self, X, min_freq=1):
         if self.sublinear_tf:
-            X[X.nonzero()] = 1.0 + np.log(X[X.nonzero()])
+            X = ensure_sparse_format(X)
+            np.log(X.data, X.data)
+            X.data += 1
         f = self._n_features
         X = X * sp.spdiags(self.k, 0, f, f)
         if self.norm:
@@ -133,7 +144,9 @@ class TforVectorizer(BaseBinaryFitter):
             Return bool vector states that feature if in 95% confidence interval.
         """
         if self.sublinear_tf:
-            X[X.nonzero()] = 1.0 + np.log(X[X.nonzero()])
+            X = ensure_sparse_format(X)
+            np.log(X.data, X.data)
+            X.data += 1
 
         tp = self._tp
         fp = self._fp
@@ -176,7 +189,9 @@ class TfgrVectorizer(BaseBinaryFitter):
 
     def transform(self, X):
         if self.sublinear_tf:
-            X[X.nonzero()] = 1.0 + np.log(X[X.nonzero()])
+            X = ensure_sparse_format(X)
+            np.log(X.data, X.data)
+            X.data += 1
 
         tp = self._tp
         fp = self._fp
@@ -228,7 +243,9 @@ class TfigVectorizer(BaseBinaryFitter):
 
     def transform(self, X):
         if self.sublinear_tf:
-            X[X.nonzero()] = 1.0 + np.log(X[X.nonzero()])
+            X = ensure_sparse_format(X)
+            np.log(X.data, X.data)
+            X.data += 1
 
         tp = self._tp
         fp = self._fp
@@ -275,7 +292,9 @@ class Tfchi2Vectorizer(BaseBinaryFitter):
 
     def transform(self, X):
         if self.sublinear_tf:
-            X[X.nonzero()] = 1.0 + np.log(X[X.nonzero()])
+            X = ensure_sparse_format(X)
+            np.log(X.data, X.data)
+            X.data += 1
 
         tp = self._tp
         fp = self._fp
@@ -319,7 +338,9 @@ class TfrfVectorizer(BaseBinaryFitter):
 
     def transform(self, X):
         if self.sublinear_tf:
-            X[X.nonzero()] = 1.0 + np.log(X[X.nonzero()])
+            X = ensure_sparse_format(X)
+            np.log(X.data, X.data)
+            X.data += 1
 
         tp = self._tp
         fn = self._fn
@@ -355,7 +376,9 @@ class TfrrfVectorizer(BaseBinaryFitter):
 
     def transform(self, X):
         if self.sublinear_tf:
-            X[X.nonzero()] = 1.0 + np.log(X[X.nonzero()])
+            X = ensure_sparse_format(X)
+            np.log(X.data, X.data)
+            X.data += 1
 
         tp = self._tp
         tn = self._tn
@@ -388,7 +411,9 @@ class TfBinIcfVectorizer(BaseBinaryFitter):
 
     def transform(self, X, min_freq=1):
         if self.sublinear_tf:
-            X[X.nonzero()] = 1.0 + np.log(X[X.nonzero()])
+            X = ensure_sparse_format(X)
+            np.log(X.data, X.data)
+            X.data += 1
         tp = self._tp
         fn = self._fn
 
@@ -420,7 +445,9 @@ class TfpfVectorizer(BaseBinaryFitter):
 
     def transform(self, X, min_freq=1):
         if self.sublinear_tf:
-            X[X.nonzero()] = 1.0 + np.log(X[X.nonzero()])
+            X = ensure_sparse_format(X)
+            np.log(X.data, X.data)
+            X.data += 1
         tp = self._tp
         fn = self._fn
 
