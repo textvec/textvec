@@ -28,7 +28,7 @@ Here is a comparison for binary classification on imdb sentiment data set. Label
 
 ![Binary comparison](https://github.com/zveryansky/textvec/blob/master/examples/images/imdb_bin.png)
 
-For more dataset benchmarks (rotten tomatoes, airline sentiment) see [Binary classification quality comparison](https://github.com/zveryansky/textvec/blob/master/examples/binary_classification_quality_comparison.ipynb)
+For more dataset benchmarks (rotten tomatoes, airline sentiment) see [Binary classification quality comparison](https://github.com/zveryansky/textvec/blob/master/examples/binary_comparison.ipynb)
 
 ------------------
 
