@@ -13,22 +13,22 @@ But most text classification examples on the internet ignores that fact.
 
 |          |      IMDB_bin      |   RT_bin   |  Airlines Sentiment_bin  | Airlines Sentiment_multiclass | 20news_multiclass |
 |----------|--------------------|------------|--------------------------|-------------------------------|-------------------|
-| TFOR     |     __0.9088__     | __0.7820__ |          0.9173          |              NA               |         NA        |
-| TFICF    |       0.8992       |   0.7661   |          0.9220          |          __0.8067__           |     __0.8552__    |
-| TFBINICF |       0.8978       |   0.7628   |        __0.9238__        |              NA               |         NA        |
-| TFRF     |       0.8977       |   0.7609   |          0.9207          |              NA               |         NA        |
-| TFIDF    |       0.8923       |   0.7539   |          0.8939          |            0.7763             |       0.8335      |
-| TFPF     |       0.8949       |   0.7464   |          0.9164          |              NA               |         NA        |
-| TF       |       0.8786       |   0.7286   |          0.9017          |            0.7865             |       0.7796      |
-| TFIR     |       0.8361       |   0.7159   |          0.9017          |              NA               |         NA        |
-| TFCHI2   |       0.8734       |   0.6990   |          0.8900          |              NA               |         NA        |
-| TFGR     |       0.8581       |   0.6793   |          0.8883          |              NA               |         NA        |
+| TF       |       0.8984       |   0.7571   |          0.9194          |            0.8084             |       0.8206      |
+| TFIDF    |       0.9052       |   0.7717   |        __0.9259__        |            0.8118             |     __0.8575__    |
+| TFPF     |       0.8813       |   0.7403   |          0.9212          |              NA               |         NA        |
+| TFRF     |       0.8797       |   0.7412   |          0.9194          |              NA               |         NA        |
+| TFICF    |       0.8984       |   0.7642   |          0.9199          |          __0.8125__           |       0.8292      |
+| TFBINICF |       0.8984       |   0.7571   |          0.9194          |              NA               |         NA        |
+| TFCHI2   |       0.8898       |   0.7398   |          0.9108          |              NA               |         NA        |
+| TFGR     |       0.8850       |   0.7065   |          0.8956          |              NA               |         NA        |
+| TFRRF    |       0.8879       |   0.7506   |          0.9194          |              NA               |         NA        |
+| TFOR     |     __0.9092__     | __0.7806__ |          0.9207          |              NA               |         NA        |
 
 Here is a comparison for binary classification on imdb sentiment data set. Labels sorted by accuracy score and the heatmap shows the correlation between different approaches. As you can see some methods are good for to ensemble models or perform features selection.
 
 ![Binary comparison](https://github.com/zveryansky/textvec/blob/master/examples/images/imdb_bin.png)
 
-For more dataset benchmarks (rotten tomatoes, airline sentiment) see [Binary classification quality comparison](https://github.com/zveryansky/textvec/blob/master/examples/binary_classification_quality_comparison.ipynb)
+For more dataset benchmarks (rotten tomatoes, airline sentiment) see [Binary classification quality comparison](https://github.com/zveryansky/textvec/blob/master/examples/binary_comparison.ipynb)
 
 ------------------
 
