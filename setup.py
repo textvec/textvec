@@ -23,5 +23,5 @@ setup(
     ],
     keywords='text nlp vectorization scikit-learn',
     packages=find_packages(exclude=['examples']),
-    install_requires=['scikit-learn','numpy','scipy'],
+    install_requires=['scikit-learn', 'numpy', 'scipy', 'gensim'],
 )
