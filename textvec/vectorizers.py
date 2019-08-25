@@ -59,7 +59,7 @@ class TfIcfVectorizer(TransformerMixin):
         f = self._n_features
         X = X * sp.spdiags(self.k, 0, f, f)
         if self.norm:
-            X = normalize(X, self.norm)
+            X = normalize(X, self.norm, copy=False)
         return X
 
 
@@ -159,7 +159,7 @@ class TforVectorizer(BaseBinaryFitter):
         X = X * sp.spdiags(k, 0, f, f)
 
         if self.norm:
-            X = normalize(X, self.norm)
+            X = normalize(X, self.norm, copy=False)
 
         if confidence:
             up = np.exp(k + 1.96 * np.sqrt(1 / tp + 1 / fp + 1 / fn + 1 / tn))
@@ -216,7 +216,7 @@ class TfgrVectorizer(BaseBinaryFitter):
 
         X = X * sp.spdiags(k, 0, f, f)
         if self.norm:
-            X = normalize(X, self.norm)
+            X = normalize(X, self.norm, copy=False)
 
         return X
 
@@ -265,7 +265,7 @@ class TfigVectorizer(BaseBinaryFitter):
 
         X = X * sp.spdiags(k, 0, f, f)
         if self.norm:
-            X = normalize(X, self.norm)
+            X = normalize(X, self.norm, copy=False)
 
         return X
 
@@ -311,7 +311,7 @@ class Tfchi2Vectorizer(BaseBinaryFitter):
 
         X = X * sp.spdiags(k, 0, f, f)
         if self.norm:
-            X = normalize(X, self.norm)
+            X = normalize(X, self.norm, copy=False)
 
         return X
 
@@ -351,7 +351,7 @@ class TfrfVectorizer(BaseBinaryFitter):
 
         X = X * sp.spdiags(k, 0, f, f)
         if self.norm:
-            X = normalize(X, self.norm)
+            X = normalize(X, self.norm, copy=False)
 
         return X
 
@@ -389,7 +389,7 @@ class TfrrfVectorizer(BaseBinaryFitter):
 
         X = X * sp.spdiags(k, 0, f, f)
         if self.norm:
-            X = normalize(X, self.norm)
+            X = normalize(X, self.norm, copy=False)
 
         return X
 
@@ -424,7 +424,7 @@ class TfBinIcfVectorizer(BaseBinaryFitter):
 
         X = X * sp.spdiags(k, 0, f, f)
         if self.norm:
-            X = normalize(X, self.norm)
+            X = normalize(X, self.norm, copy=False)
 
         return X
 
@@ -458,7 +458,7 @@ class TfpfVectorizer(BaseBinaryFitter):
 
         X = X * sp.spdiags(k, 0, f, f)
         if self.norm:
-            X = normalize(X, self.norm)
+            X = normalize(X, self.norm, copy=False)
 
         return X
 
@@ -651,5 +651,5 @@ class SifVectorizer:
         if self.npc > 0:
             embeddings = self._remove_pc(embeddings, self.npc)
         if self.norm:
-            embeddings = normalize(embeddings, self.norm)
+            embeddings = normalize(embeddings, self.norm, copy=False)
         return embeddings
