@@ -71,21 +71,20 @@ For more detailed examples see [Basic example](https://github.com/zveryansky/tex
 - TfrrfVectorizer
 - TfBinIcfVectorizer
 - TfpfVectorizer
+- SifVectorizer
 
-Most of the vectorization techniques you can find in articles<sup>1,2</sup>. If you see any method with wrong name or reference pls commit!
+Most of the vectorization techniques you can find in articles<sup>1,2,3</sup>. If you see any method with wrong name or reference pls commit!
 
 ------------------
 
 ## TODO
 - [ ] Add TFBNS
-- [ ] Remove dependence of sklearn
-- [ ] Tests
 - [ ] Docs
-- [ ] GridSearch for benchmark
 
 ------------------
 
 ## REFERENCE
 - [1] https://arxiv.org/pdf/1012.2609.pdf
 - [2] [M. Lan, C. L. Tan, J. Su, and Y. Lu] Supervised and traditional term weighting methods for automatic text categorization
-- [3] Thanks [aysent](https://aysent.github.io/2015/10/21/supervised-term-weighting.html#motivation-for-text-classification-tasks) for an inspiration
+- [3] https://openreview.net/pdf?id=SyK00v5xx
+- [4] Thanks [aysent](https://aysent.github.io/2015/10/21/supervised-term-weighting.html#motivation-for-text-classification-tasks) for an inspiration
