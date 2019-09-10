@@ -5,7 +5,7 @@ setup(
     name='textvec',
     use_scm_version=True,
     description='Supervised text features extraction',
-    version = '1.0.1',
+    version='2.0',
     url='https://github.com/zveryansky/textvec',
     author='Alex Zveryansky',
     author_email='',
