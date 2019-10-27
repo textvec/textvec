@@ -96,8 +96,8 @@ class BaseBinaryFitter(TransformerMixin):
 
         tp = np.bincount(X_pos.indices, minlength=n_features)
         fp = np.sum(y) - tp
-        fn = np.bincount(X_neg.indices, minlength=n_features)
-        tn = np.sum(1 - y) - fn
+        tn = np.bincount(X_neg.indices, minlength=n_features)
+        fn = np.sum(1 - y) - tn
 
         self._n_samples = n_samples
         self._n_features = n_features
