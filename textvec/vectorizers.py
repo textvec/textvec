@@ -106,6 +106,8 @@ class BaseBinaryFitter(TransformerMixin):
         self._fp = fp
         self._fn = fn
         self._tn = tn
+        self._p = np.sum(y)
+        self._n = np.sum(1 - y)
 
         if self.smooth_df:
             self._n_samples += int(self.smooth_df)
@@ -114,6 +116,46 @@ class BaseBinaryFitter(TransformerMixin):
             self._fn += int(self.smooth_df)
             self._tn += int(self.smooth_df)
         return self
+
+
+class TfbnsVectorizer(BaseBinaryFitter):
+    """Supervised method (supports ONLY binary classification)
+    transform a count matrix to a normalized TfBNS representation
+    Tf means term-frequency while OR means odds ratio.
+    Parameters
+    ----------
+    norm : 'l1', 'l2', 'max' or None, optional
+        Norm used to normalize term vectors. None for no normalization.
+    smooth_df : boolean or int, default=True
+        Smooth df weights by adding one to document frequencies, as if an
+        extra document was seen containing every term in the collection
+        exactly once. Prevents zero divisions.
+    sublinear_tf : boolean, default=False
+        Apply sublinear tf scaling, i.e. replace tf with 1 + log(tf).
+    References
+    ----------
+    .. [George Forman] https://www.researchgate.net/publ \
+    ication/221613942_BNS_feature_scaling_An_improved_representation_over_TF-ID \
+    F_for_SVM_text_classification
+
+    """
+    def transform(self, X):
+        tp = self._tp
+        fp = self._fp
+        fn = self._fn
+        tn = self._tn
+
+        f = self._n_features
+        tpr = tp/self._p
+        fpr = 1-tn/self._n
+        min_bound, max_bound = 0.0005, 1 - 0.0005
+        tpr[tpr<min_bound]  = min_bound
+        fpr[fpr<min_bound]  = min_bound
+        k = np.abs(norm.ppf(tpr) - norm.ppf(fpr))
+        X = X * sp.spdiags(k, 0, f, f)
+        if self.norm:
+            X = normalize(X, self.norm, copy=False)
+        return X
 
 
 class TforVectorizer(BaseBinaryFitter):
