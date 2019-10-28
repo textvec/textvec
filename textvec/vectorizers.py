@@ -161,6 +161,65 @@ class TfbnsVectorizer(BaseBinaryFitter):
         return X
 
 
+class TfebnsVectorizer(TransformerMixin):
+    """Doesn't work for multiclass as promised in paper. Needs investigation
+    Parameters
+    ----------
+    norm : 'l1', 'l2', 'max' or None, optional
+        Norm used to normalize term vectors. None for no normalization.
+    sublinear_tf : boolean, default=False
+        Apply sublinear tf scaling, i.e. replace tf with 1 + log(tf).
+    References
+    ----------
+    .. [0] `https://www.researchgate.net/publication/333231361_\
+    Weighting_Words_Using_Bi-Normal_Separation_for_Text_Classifi \
+    cation_Tasks_with_Multiple_Classes`
+    """
+    def __init__(self, norm=None, sublinear_tf=False):
+        self.norm = norm
+        self.sublinear_tf = sublinear_tf
+
+    def fit(self, X, y):
+        n_samples, n_features = X.shape
+        samples = []
+        for i, val in enumerate(y.unique()):
+            class_y = y == val
+            class_p = np.sum(class_y)
+            class_n = np.sum(1 - class_y)
+            pos_samples = sp.spdiags(class_y, 0, n_samples, n_samples)
+            neg_samples = sp.spdiags(1 - class_y, 0, n_samples, n_samples)
+
+            class_X_pos = pos_samples * X
+            class_X_neg = neg_samples * X
+            tp = np.bincount(class_X_pos.indices, minlength=n_features)
+            fp = class_p - tp
+            tn = np.bincount(class_X_neg.indices, minlength=n_features)
+            fn = class_n - tn
+            tpr = tp / class_p
+            fpr = fp / class_n
+            min_bound, max_bound = 0.0005, 1 - 0.0005
+            tpr[tpr < min_bound]  = min_bound
+            tpr[tpr > max_bound]  = max_bound
+            fpr[fpr < min_bound]  = min_bound
+            fpr[fpr > max_bound]  = max_bound
+            samples.append(norm.ppf(tpr) - norm.ppf(fpr))
+        samples = np.array(samples)
+        self.k = np.max(samples, axis=0)
+        self._n_features = n_features
+        return self
+
+    def transform(self, X):
+        if self.sublinear_tf:
+            X = ensure_sparse_format(X)
+            np.log(X.data, X.data)
+            X.data += 1
+        f = self._n_features
+        X = X * sp.spdiags(self.k, 0, f, f)
+        if self.norm:
+            X = normalize(X, self.norm, copy=False)
+        return X
+
+
 class TforVectorizer(BaseBinaryFitter):
     """Supervised method (supports ONLY binary classification) 
     transform a count matrix to a normalized Tfor representation
