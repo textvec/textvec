@@ -3,6 +3,7 @@ import itertools
 
 import numpy as np
 import scipy.sparse as sp
+from scipy.stats import norm
 from sklearn.decomposition import TruncatedSVD
 from sklearn.preprocessing import normalize
 from sklearn.base import TransformerMixin
@@ -146,11 +147,13 @@ class TfbnsVectorizer(BaseBinaryFitter):
         tn = self._tn
 
         f = self._n_features
-        tpr = tp/self._p
-        fpr = 1-tn/self._n
+        tpr = tp / self._p
+        fpr = fp / self._n
         min_bound, max_bound = 0.0005, 1 - 0.0005
-        tpr[tpr<min_bound]  = min_bound
-        fpr[fpr<min_bound]  = min_bound
+        tpr[tpr < min_bound]  = min_bound
+        tpr[tpr > max_bound]  = max_bound
+        fpr[fpr < min_bound]  = min_bound
+        fpr[fpr > max_bound]  = max_bound
         k = np.abs(norm.ppf(tpr) - norm.ppf(fpr))
         X = X * sp.spdiags(k, 0, f, f)
         if self.norm:
