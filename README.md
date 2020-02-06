@@ -72,13 +72,13 @@ For more detailed examples see [Basic example](https://github.com/zveryansky/tex
 - TfBinIcfVectorizer
 - TfpfVectorizer
 - SifVectorizer
+- TfbnsVectorizer
 
 Most of the vectorization techniques you can find in articles<sup>1,2,3</sup>. If you see any method with wrong name or reference pls commit!
 
 ------------------
 
 ## TODO
-- [ ] Add TFBNS
 - [ ] Docs
 
 ------------------
