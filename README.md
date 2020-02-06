@@ -60,7 +60,7 @@ tficf_vec.fit(cvec.transform(text), y)
 ```
 For more detailed examples see [Basic example](https://github.com/zveryansky/textvec/blob/master/examples/basic_usage.ipynb) and other notebooks in [Examples](https://github.com/zveryansky/textvec/blob/master/examples)
 
-### Currently impletented methods:
+### Currently implemented methods:
 
 - TfIcfVectorizer
 - TforVectorizer
@@ -73,7 +73,7 @@ For more detailed examples see [Basic example](https://github.com/zveryansky/tex
 - TfpfVectorizer
 - SifVectorizer
 
-Most of the vectorization techniques you can find in articles<sup>1,2,3</sup>. If you see any method with wrong name or reference pls commit!
+Most of the vectorization techniques you can find in articles<sup>1,2,3</sup>. If you see any method with wrong name or reference please commit!
 
 ------------------
 
@@ -84,7 +84,7 @@ Most of the vectorization techniques you can find in articles<sup>1,2,3</sup>. I
 ------------------
 
 ## REFERENCE
-- [1] https://arxiv.org/pdf/1012.2609.pdf
-- [2] [M. Lan, C. L. Tan, J. Su, and Y. Lu] Supervised and traditional term weighting methods for automatic text categorization
-- [3] https://openreview.net/pdf?id=SyK00v5xx
+- [1] [Deqing Wang and Hui Zhang] [Inverse-Category-Frequency based Supervised Term Weighting Schemes for Text Categorization](https://arxiv.org/pdf/1012.2609.pdf)
+- [2] [M. Lan, C. L. Tan, J. Su, and Y. Lu] [Supervised and traditional term weighting methods for automatic text categorization](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.151.3665&rep=rep1&type=pdf)
+- [3] [Sanjeev Arora, Yingyu Liang and Tengyu Ma] [A Simple But Tough-To-Beat Baseline For Sentence Embeddings](https://openreview.net/pdf?id=SyK00v5xx)
 - [4] Thanks [aysent](https://aysent.github.io/2015/10/21/supervised-term-weighting.html#motivation-for-text-classification-tasks) for an inspiration
