@@ -1,4 +1,4 @@
-![textvec logo](https://github.com/zveryansky/textvec/blob/master/examples/images/logo.png)
+![textvec logo](/examples/images/logo.png?raw=true)
 ## WHAT: Supervised text vectorization tool
 
 Textvec is a text vectorization tool, with the aim to implement all the "classic" text vectorization NLP methods in Python. The main idea of this project is to show alternatives for an excellent TFIDF method which is highly overused for supervised tasks. All interfaces are similar to [scikit-learn](https://github.com/scikit-learn/scikit-learn) so you should be able to test the performance of this supervised methods just with a few changes.
@@ -26,9 +26,9 @@ But most text classification examples on the internet ignores that fact.
 
 Here is a comparison for binary classification on imdb sentiment data set. Labels sorted by accuracy score and the heatmap shows the correlation between different approaches. As you can see some methods are good for to ensemble models or perform features selection.
 
-![Binary comparison](https://github.com/zveryansky/textvec/blob/master/examples/images/imdb_bin.png)
+![Binary comparison](/examples/images/imdb_bin.png?raw=true)
 
-For more dataset benchmarks (rotten tomatoes, airline sentiment) see [Binary classification quality comparison](https://github.com/zveryansky/textvec/blob/master/examples/binary_comparison.ipynb)
+For more dataset benchmarks (rotten tomatoes, airline sentiment) see [Binary classification quality comparison](/examples/binary_comparison.ipynb)
 
 ------------------
 
@@ -58,7 +58,7 @@ cvec = CountVectorizer().fit(train_data.text)
 tficf_vec = TfBinIcfVectorizer(sublinear_tf=True)
 tficf_vec.fit(cvec.transform(text), y)
 ```
-For more detailed examples see [Basic example](https://github.com/zveryansky/textvec/blob/master/examples/basic_usage.ipynb) and other notebooks in [Examples](https://github.com/zveryansky/textvec/blob/master/examples)
+For more detailed examples see [Basic example](/examples/basic_usage.ipynb) and other notebooks in [Examples](/examples)
 
 ### Currently implemented methods:
 
