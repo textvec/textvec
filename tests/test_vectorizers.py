@@ -3,6 +3,9 @@ import math
 import pytest
 from scipy.spatial.distance import cosine
 from scipy.sparse.linalg import norm as sp_norm
+from sklearn.model_selection import GridSearchCV
+from sklearn.pipeline import Pipeline
+from sklearn.dummy import DummyClassifier
 
 from textvec.vectorizers import *
 
@@ -60,6 +63,18 @@ class TestVectorizers:
         transformed = cv.transform(sentences)
         matrix = v.transform(transformed).toarray()
         np.testing.assert_allclose(matrix, np.zeros_like(matrix))
+
+    def test_gridsearchcv(self, count_matrix_dataset, vectorizer):
+        """Check that vectorizer accepts parameters from GridSearchCV."""
+        cv, x, y = count_matrix_dataset
+        pipeline = Pipeline([
+            ('vect', vectorizer()),
+            ('clf', DummyClassifier()),
+        ])
+        parameters = {
+            'vect__sublinear_tf': (False, True),
+        }
+        GridSearchCV(pipeline, parameters, cv=2).fit(x, y)
 
 
 class TestSif:
