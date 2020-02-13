@@ -6,7 +6,7 @@ import scipy.sparse as sp
 from scipy.stats import norm
 from sklearn.decomposition import TruncatedSVD
 from sklearn.preprocessing import normalize
-from sklearn.base import TransformerMixin
+from sklearn.base import TransformerMixin, BaseEstimator
 from gensim.models.keyedvectors import BaseKeyedVectors
 
 
@@ -19,7 +19,7 @@ def ensure_sparse_format(array, dtype=np.float64):
     return array
 
 
-class TfIcfVectorizer(TransformerMixin):
+class TfIcfVectorizer(TransformerMixin, BaseEstimator):
     """Supervised method (supports multiclass) to transform 
     a count matrix to a normalized Tficf representation
     Tf means term-frequency while ICF means inverse category frequency.
@@ -119,7 +119,7 @@ class BaseBinaryFitter(TransformerMixin):
         return self
 
 
-class TfbnsVectorizer(BaseBinaryFitter):
+class TfbnsVectorizer(BaseBinaryFitter, BaseEstimator):
     """Supervised method (supports ONLY binary classification)
     transform a count matrix to a normalized TfBNS representation
     Tf means term-frequency while OR means odds ratio.
@@ -161,7 +161,7 @@ class TfbnsVectorizer(BaseBinaryFitter):
         return X
 
 
-class TfebnsVectorizer(TransformerMixin):
+class TfebnsVectorizer(TransformerMixin, BaseEstimator):
     """Doesn't work for multiclass as promised in paper. Needs investigation
     Parameters
     ----------
@@ -220,7 +220,7 @@ class TfebnsVectorizer(TransformerMixin):
         return X
 
 
-class TforVectorizer(BaseBinaryFitter):
+class TforVectorizer(BaseBinaryFitter, BaseEstimator):
     """Supervised method (supports ONLY binary classification) 
     transform a count matrix to a normalized Tfor representation
     Tf means term-frequency while OR means odds ratio.
@@ -272,7 +272,7 @@ class TforVectorizer(BaseBinaryFitter):
         return X
 
 
-class TfgrVectorizer(BaseBinaryFitter):
+class TfgrVectorizer(BaseBinaryFitter, BaseEstimator):
     """Supervised method (supports ONLY binary classification) 
     transform a count matrix to a normalized Tfor representation
     Tf means term-frequency while GR means gain ratio.
@@ -325,7 +325,7 @@ class TfgrVectorizer(BaseBinaryFitter):
         return X
 
 
-class TfigVectorizer(BaseBinaryFitter):
+class TfigVectorizer(BaseBinaryFitter, BaseEstimator):
     """Supervised method (supports ONLY binary classification) 
     transform a count matrix to a normalized Tfor representation
     Tf means term-frequency while IG means information gain.
@@ -374,7 +374,7 @@ class TfigVectorizer(BaseBinaryFitter):
         return X
 
 
-class Tfchi2Vectorizer(BaseBinaryFitter):
+class Tfchi2Vectorizer(BaseBinaryFitter, BaseEstimator):
     """Supervised method (supports ONLY binary classification) 
     transform a count matrix to a normalized Tfor representation
     Tf means term-frequency while CHI2 means Chi-Square.
@@ -420,7 +420,7 @@ class Tfchi2Vectorizer(BaseBinaryFitter):
         return X
 
 
-class TfrfVectorizer(BaseBinaryFitter):
+class TfrfVectorizer(BaseBinaryFitter, BaseEstimator):
     """Supervised method (supports ONLY binary classification) 
     transform a count matrix to a normalized Tfrf representation
     Tf means term-frequency while RF means relevance frequency.
@@ -460,7 +460,7 @@ class TfrfVectorizer(BaseBinaryFitter):
         return X
 
 
-class TfrrfVectorizer(BaseBinaryFitter):
+class TfrrfVectorizer(BaseBinaryFitter, BaseEstimator):
     """Supervised method (supports ONLY binary classification) 
     transform a count matrix to a normalized Tfirf representation
     Tf means term-frequency while RRF means reversed relevance frequency.
@@ -498,7 +498,7 @@ class TfrrfVectorizer(BaseBinaryFitter):
         return X
 
 
-class TfBinIcfVectorizer(BaseBinaryFitter):
+class TfBinIcfVectorizer(BaseBinaryFitter, BaseEstimator):
     """Supervised method (supports ONLY binary classification) 
     transform a count matrix to a normalized Tficf representation
     Tf means term-frequency while ICF means inverse category frequency.
@@ -533,7 +533,7 @@ class TfBinIcfVectorizer(BaseBinaryFitter):
         return X
 
 
-class TfpfVectorizer(BaseBinaryFitter):
+class TfpfVectorizer(BaseBinaryFitter, BaseEstimator):
     """Supervised method (supports ONLY binary classification) 
     transform a count matrix to a normalized Tficf representation
     Tf means term-frequency while PF power frequency.
