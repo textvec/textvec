@@ -40,7 +40,7 @@ pip install textvec
 
 Source code:
 ```
-git clone https://github.com/zveryansky/textvec
+git clone https://github.com/textvec/textvec
 cd textvec
 pip install .
 ```
