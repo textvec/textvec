@@ -6,7 +6,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 @pytest.fixture(scope="module")
 def keyed_vectors():
-    model = KeyedVectors(5)
+    model = KeyedVectors(vector_size=5)
     words = ["cat", "dog", "foo", "bar", "one", "two"]
     vectors = np.array([[0, 0, 0, 0, 1],
                         [0, 0, 0, 0.28, 0.96],
@@ -14,7 +14,7 @@ def keyed_vectors():
                         [0, 0, 1, 0, 0],
                         [0.28, 0.96, 0, 0, 0],
                         [0.6, 0.8, 0, 0, 0]])
-    model.add(words, vectors)
+    model.add_vectors(words, vectors)
     return model
 
 
