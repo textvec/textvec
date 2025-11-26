@@ -5,5 +5,10 @@ pypihelp.txt
 build/*
 dist/*
 textvec.egg-info/*
+.venv*/
+.uv-tmp/
+uv.lock
+.pytest_cache/
+.pytest-tmp/
 examples/data/*
 examples/.ipynb_checkpoints

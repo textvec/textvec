@@ -7,7 +7,7 @@ from scipy.stats import norm
 from sklearn.decomposition import TruncatedSVD
 from sklearn.preprocessing import normalize
 from sklearn.base import TransformerMixin, BaseEstimator
-from gensim.models.keyedvectors import BaseKeyedVectors
+from gensim.models import KeyedVectors
 
 
 def ensure_sparse_format(array, dtype=np.float64):
@@ -574,7 +574,7 @@ class SifVectorizer:
 
     Parameters
     ----------
-    model : :class:`~gensim.models.keyedvectors.BaseKeyedVectors`
+    model : :class:`~gensim.models.KeyedVectors`
         Object contains the word vectors and the vocabulary.
 
     alpha : float, default=0.001
@@ -618,10 +618,10 @@ class SifVectorizer:
     """
 
     def __init__(self, model, alpha=1e-3, npc=1, norm="l2"):
-        if isinstance(model, BaseKeyedVectors):
+        if isinstance(model, KeyedVectors):
             self.model = model
         else:
-            raise RuntimeError("Model must be child of BaseKeyedVectors class")
+            raise RuntimeError("Model must inherit from Gensim KeyedVectors")
 
         assert alpha > 0
         assert npc >= 0
@@ -698,10 +698,11 @@ class SifVectorizer:
         """
         vocab = collections.Counter(itertools.chain.from_iterable(X))
         corpus_size = len(vocab)
+        key_to_index = self.model.key_to_index
         self.vocab = {
-            self.model.vocab[k].index: self.alpha / (self.alpha + v / corpus_size)
+            key_to_index[k]: self.alpha / (self.alpha + v / corpus_size)
             for k, v in vocab.items()
-            if k in self.model
+            if k in key_to_index
         }
         self.oov_sif_weight = min(vocab.values())
         return self
@@ -720,12 +721,12 @@ class SifVectorizer:
             The sentence embedding matrix.
 
         """
-        wv_vocab = self.model.vocab
+        wv_vocab = self.model.key_to_index
         wv_vectors = self.model.vectors
 
         sent_embeddings = np.zeros((len(sentences), self.dim), dtype=np.float32)
         for i, sent in enumerate(sentences):
-            sent_indices = [wv_vocab[w].index for w in sent if w in self.model]
+            sent_indices = [wv_vocab[w] for w in sent if w in wv_vocab]
             weights = np.array([
                 self.vocab.get(idx, self.oov_sif_weight)
                 for idx in sent_indices
